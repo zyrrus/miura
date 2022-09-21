@@ -1,7 +1,7 @@
 import bpy
 
 from miura.panels.root import ORI_PT_main_panel
-
+from miura.ops.tessellate import ORI_OP_overlay_ori
 
 # Panel docs
 # https://docs.blender.org/api/current/bpy.types.Panel.html?#bpy.types.Panel.bl_space_type
@@ -25,6 +25,6 @@ class ORI_PT_tessellation_panel(ORI_PT_main_panel, bpy.types.Panel):
         col = self.layout.column()
         col.label(text="Overlay Tessellation:")
         # col.prop(ori_props, "phi_functions")
-        # col.operator(ORI_OP_transform_mesh.bl_idname, text="Transform Mesh")
+        col.operator(ORI_OP_overlay_ori.bl_idname, text="Tessellate")
         
         

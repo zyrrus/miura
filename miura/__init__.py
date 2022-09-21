@@ -38,6 +38,10 @@ class ORI_properties(bpy.types.PropertyGroup):
         ]
     )   
 
+    # tessellate_tolerance
+    # tessellate_flip_normals
+
+
 # ------------------------------------------------------------------------
 #    Registration
 # ------------------------------------------------------------------------

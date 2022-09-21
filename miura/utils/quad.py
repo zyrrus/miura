@@ -1,32 +1,32 @@
+import bpy
 import numpy as np
 from numpy import sqrt, dot, cross                       
 from numpy.linalg import norm
 
 
-def quad_to_miura(nw, ne, se, sw, r):
+def quad_to_miura(nw, ne, se, sw, r, normal):
     '''
     If the cell is 'pointed' upwards:
         NW /\ NE
           |  |
           |/\|
         SW    SE
-
-    r: the length of the sides of the equilateral triangles
     '''
 
     r_root3 = r * sqrt(3)
 
-    a = sw - nw
-    b = ne - nw
-    normal = cross(a, b)
+    try:
+        c = get_intersection_point(normal, True,  nw, ne, sw, r, r, r_root3)
+        n = get_intersection_point(normal, True, nw, ne, c, r, r, r)
+        e = get_intersection_point(normal, True,  ne, se, c, r, r, r)
+        s = get_intersection_point(normal, False, sw, se, c, r, r, r)
+        w = get_intersection_point(normal, True,  sw, nw, c, r, r, r)
 
-    c = get_intersection_point(normal, True, nw, ne, sw, r, r, r_root3)
-    n = get_intersection_point(normal, False, nw, ne, c, r, r, r)
-    e = get_intersection_point(normal, True, ne, se, c, r, r, r)
-    s = get_intersection_point(normal, False, sw, se, c, r, r, r)
-    w = get_intersection_point(normal, True, sw, nw, c, r, r, r)
+        build_cell_mesh(nw, ne, se, sw, n, e, s, w, c)
+    except:
+        pass
 
-    build_cell_mesh(nw, ne, se, sw, n, e, s, w, c)
+    # raise Exception("Done")
 
 
 def get_intersection_point(normal_dir, want_normal_side, c1, c2, c3, r1, r2, r3):
@@ -60,14 +60,34 @@ def intersect_spheres(c1, c2, c3, r1, r2, r3):
     j = dot(e_y,temp2)                                   
     x = (r1*r1 - r2*r2 + d*d) / (2*d)                    
     y = (r1*r1 - r3*r3 -2*i*x + i*i + j*j) / (2*j)       
+    # temp4 = r1*r1 - x*x - y*y                            
+    # if temp4<0:
     temp4 = r1*r1 - x*x - y*y                            
-    if temp4<0:                                          
-        raise Exception("The three spheres do not intersect!");
-    z = sqrt(temp4)                                     
+    if temp4 < -0.07:
+        raise Exception("The three spheres do not intersect!\n" + \
+            f"{c1}, {r1} \n{c2}, {r2} \n{c3}, {r3}");
+    z = sqrt(abs(temp4))                                     
     p_12_a = c1 + x*e_x + y*e_y + z*e_z                  
     p_12_b = c1 + x*e_x + y*e_y - z*e_z                  
     return p_12_a,p_12_b    
 
 
 def build_cell_mesh(nw, ne, se, sw, n, e, s, w, c):
-    pass
+    verts = [nw, ne, se, sw, n, e, s, w, c]
+    faces = [
+        (0, 4, 8), 
+        (0, 8, 7), 
+        (1, 8, 4),
+        (1, 5, 8),
+        (3, 7, 6),
+        (7, 8, 6),
+        (2, 6, 5),
+        (6, 8, 5)
+    ]
+    
+    # Put mesh in Blender
+    name = "cell"
+    mesh = bpy.data.meshes.new(name) 
+    mesh.from_pydata(verts, [], faces) 
+    obj = bpy.data.objects.new(name, mesh) 
+    bpy.context.scene.collection.objects.link(obj)
