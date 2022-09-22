@@ -29,6 +29,13 @@ class ORI_properties(bpy.types.PropertyGroup):
     domain_y_size: bpy.props.FloatProperty(name="Y size", soft_min=0, default=2*pi)
     domain_x_cells: bpy.props.IntProperty(name="X cells", soft_min=0, default=10)
     domain_y_cells: bpy.props.IntProperty(name="Y cells", soft_min=0, default=10)
+
+    cell_name: bpy.props.StringProperty(name="Name", default="Guide")
+    cell_orientation: bpy.props.BoolProperty(name="Orientated up", description="Facing up = True; Facing right = False.")
+    cell_r: bpy.props.FloatProperty(name="r size", description="Size of equilateral triangle sides", soft_min=0, default=1)
+    cell_rows: bpy.props.IntProperty(name="Rows", soft_min=0, default=6)
+    cell_cols: bpy.props.IntProperty(name="Columns", soft_min=0, default=6)
+    cell_flip_normals: bpy.props.BoolProperty(name="Flip normal direction")
     
     phi_functions: bpy.props.EnumProperty(
         name="Functions",

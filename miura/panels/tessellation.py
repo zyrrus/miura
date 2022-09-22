@@ -24,7 +24,7 @@ class ORI_PT_tessellation_panel(ORI_PT_main_panel, bpy.types.Panel):
         
         col = self.layout.column()
         col.label(text="Overlay Tessellation:")
-        # col.prop(ori_props, "phi_functions")
+        col.prop(ori_props, "cell_flip_normals")
         col.operator(ORI_OP_overlay_ori.bl_idname, text="Tessellate")
         
         
