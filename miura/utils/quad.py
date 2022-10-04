@@ -22,20 +22,26 @@ def quad_to_miura(nw, ne, se, sw, r, normal):
         # s = get_intersection_point(normal, False, sw, se, c, r, r, r)
         # w = get_intersection_point(normal, True,  sw, nw, c, r, r, r)
 
-        c = get_intersection_point(normal, True, sw, se, ne, r_root3, r_root3, r)
-        n = get_intersection_point(normal, False, nw, ne, c, r, r, r)
-        s = get_intersection_point(normal, True, sw, se, c, r, r, r)
-        w = get_intersection_point(normal, False, nw, sw, n, r, r, r_root3)
-        e = get_intersection_point(normal, False, ne, se, n, r, r, r_root3)
+        c = get_intersection_point(normal, True, sw, se, ne, r_root3, r_root3, r, debug=False)
+        n = get_intersection_point(normal, True, nw, ne, c, r, r, r, debug=False)
+        s = get_intersection_point(normal, True, sw, se, c, r, r, r, debug=False)
+        w = get_intersection_point(normal, True, nw, sw, n, r, r, r_root3, debug=False)
+        e = get_intersection_point(normal, True, ne, se, n, r, r, r_root3, debug=False)
 
         build_cell_mesh(nw, ne, se, sw, n, e, s, w, c)
     except:
         pass
 
 
-def get_intersection_point(normal_dir, want_normal_side, c1, c2, c3, r1, r2, r3):
+def get_intersection_point(normal_dir, want_normal_side, c1, c2, c3, r1, r2, r3, debug=False):
     # Get both intersection points
     p1, p2 = intersect_spheres(c1, c2, c3, r1, r2, r3)
+
+    # Debug spheres
+    if debug:
+        bpy.ops.mesh.primitive_ico_sphere_add(location=c1, radius=r1, subdivisions=4)
+        bpy.ops.mesh.primitive_ico_sphere_add(location=c2, radius=r2, subdivisions=4)
+        bpy.ops.mesh.primitive_ico_sphere_add(location=c3, radius=r3, subdivisions=4)
 
     # Find which is pointing in the normal direction
     p1_is_normal = dot(normal_dir, p1) > 0
@@ -67,7 +73,7 @@ def intersect_spheres(c1, c2, c3, r1, r2, r3):
     # temp4 = r1*r1 - x*x - y*y                            
     # if temp4<0:
     temp4 = r1*r1 - x*x - y*y                            
-    if temp4 < -0.03:
+    if temp4 < -0.001:
         raise Exception("The three spheres do not intersect!\n" + \
             f"{c1}, {r1} \n{c2}, {r2} \n{c3}, {r3}");
     z = sqrt(abs(temp4))                                     
@@ -88,7 +94,7 @@ def build_cell_mesh(nw, ne, se, sw, n, e, s, w, c):
         # (7, 8, 6),
         # (2, 6, 5),
         # (6, 8, 5)
-        (0, 4, 8, 6),
+        (0, 4, 8, 7),
         (4, 1, 5, 8),
         (8, 5, 2, 6),
         (8, 6, 3, 7),

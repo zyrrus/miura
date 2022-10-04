@@ -91,10 +91,6 @@ class ORI_OP_generate_grid(bpy.types.Operator):
         # Select the object 
         bpy.context.view_layer.objects.active = obj
 
-
-
-
-
         # Clean up mesh
         # - select all objects
         # - join cell meshes
