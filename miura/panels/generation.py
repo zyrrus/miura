@@ -23,12 +23,12 @@ class ORI_PT_generation_panel(ORI_PT_main_panel, bpy.types.Panel):
         ori_props = context.scene.ori
         
         col = self.layout.column()
-        col.label(text="Domain Generation:")
-        col.prop(ori_props, "domain_name")
-        col.prop(ori_props, "domain_x_size")
-        col.prop(ori_props, "domain_y_size")
-        col.prop(ori_props, "domain_x_cells")
-        col.prop(ori_props, "domain_y_cells")
+        col.label(text="Mesh Generation:")
+        col.prop(ori_props, "cell_name")
+        col.prop(ori_props, "cell_orientation")
+        col.prop(ori_props, "cell_r")
+        col.prop(ori_props, "cell_rows")
+        col.prop(ori_props, "cell_cols")
         col.operator(ORI_OP_generate_grid.bl_idname, text="Generate Grid")
         
         

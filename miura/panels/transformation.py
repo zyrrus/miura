@@ -24,7 +24,6 @@ class ORI_PT_transformation_panel(ORI_PT_main_panel, bpy.types.Panel):
         ori_props = context.scene.ori
         
         col = self.layout.column()
-        col = self.layout.column()
         col.label(text="Transform Mesh:")
         col.prop(ori_props, "phi_functions")
         col.operator(ORI_OP_transform_mesh.bl_idname, text="Transform Mesh")
