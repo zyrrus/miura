@@ -70,10 +70,8 @@ def intersect_spheres(c1, c2, c3, r1, r2, r3):
     j = dot(e_y,temp2)                                   
     x = (r1*r1 - r2*r2 + d*d) / (2*d)                    
     y = (r1*r1 - r3*r3 -2*i*x + i*i + j*j) / (2*j)       
-    # temp4 = r1*r1 - x*x - y*y                            
-    # if temp4<0:
     temp4 = r1*r1 - x*x - y*y                            
-    if temp4 < -0.001:
+    if temp4 < 0:
         raise Exception("The three spheres do not intersect!\n" + \
             f"{c1}, {r1} \n{c2}, {r2} \n{c3}, {r3}");
     z = sqrt(abs(temp4))                                     
@@ -83,7 +81,7 @@ def intersect_spheres(c1, c2, c3, r1, r2, r3):
 
 
 def build_cell_mesh(nw, ne, se, sw, n, e, s, w, c):
-    #         0   1   2   3  4  5  6  7  8
+    #       [ 0   1   2   3  4  5  6  7  8]
     verts = [nw, ne, se, sw, n, e, s, w, c]
     faces = [
         # (0, 4, 8), 
