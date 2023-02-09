@@ -18,24 +18,22 @@ class ORI_OP_generate_domain(bpy.types.Operator):
         x_cell_count = ori_props.x_cell_count
 
         hyperboloid = Hyperboloid(theta)
-        dimensions = hyperboloid.domain()
-        domain_width, domain_height = dimensions['width'], dimensions['height']
-        domain_x_origin, domain_y_origin = dimensions['origin_x'], dimensions['origin_y']
+        domain = hyperboloid.get_domain()
 
         # Cells point up in the end
-        cell_height = domain_width / x_cell_count
+        cell_height = domain.width / x_cell_count
         r = cell_height / 2
         cell_width = cell_height * sqrt(3) / 2
-        y_cell_count = domain_height // cell_width
+        y_cell_count = domain.height // cell_width
 
         # Cells point sideways in the end
-        # cell_width = domain_width / x_cell_count
+        # cell_width = domain.width / x_cell_count
         # r = cell_width / sqrt(3)
         # cell_height = 2 * r
-        # y_cell_count = domain_height // cell_height
+        # y_cell_count = domain.height // cell_height
 
-        gb = GridBuilder(domain_width, domain_height, x_cell_count,
-                         y_cell_count, domain_x_origin, domain_y_origin)
+        gb = GridBuilder(domain.width, domain.height, x_cell_count,
+                         y_cell_count, domain.x_origin, domain.y_origin)
         gb.generate()
 
         return {'FINISHED'}

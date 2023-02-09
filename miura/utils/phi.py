@@ -1,14 +1,48 @@
+import abc
+from dataclasses import dataclass
 from math import sqrt, sin, cos, pi, acos
 
 import numpy as np
-import mathutils
+from mathutils import Vector
 
+@dataclass
+class Dimension:
+    x_origin: float
+    y_origin: float
+    width: float
+    height: float
+    
+@dataclass
+class Orientation: 
+    x: Vector
+    y: Vector
+    normal: Vector
 
-def identity(x, y):
-    return (x, y, 0)
+class AbstractPhi(abc.ABC):
+    @abc.abstractmethod
+    def get_domain(self) -> Dimension:
+        pass
 
+    @abc.abstractmethod
+    def phi(self, x, y) -> Vector:
+        pass
 
-class Hyperboloid:
+    @abc.abstractmethod
+    def phi_x(self, x, y) -> Vector:
+        pass
+
+    @abc.abstractmethod
+    def phi_y(self, x, y) -> Vector:
+        pass
+
+    def get_orientation(self, x, y) -> Orientation:
+        phi_x = self.phi_x(x, y)
+        phi_y = self.phi_y(x, y)
+        normal = np.cross(phi_x, phi_y)
+        return Orientation(phi_x, phi_y, normal)
+
+    
+class Hyperboloid(AbstractPhi):
     def __init__(self, theta):
         self.theta = theta
 
@@ -16,50 +50,45 @@ class Hyperboloid:
         self.s0 = sin(theta/2)
         self.a = 1 / sqrt(1 - (self.s0 * self.s0))
 
-    def domain(self):
+    def get_domain(self):
         #  Ω = [−s0*, s0*] × [0,2π/α]
 
         s0_star = sin(0.5 * acos(0.5 / self.c0))
-        dimensions = {
-            "origin_x": -s0_star,
-            "origin_y": 0,
-            "width": 2 * s0_star,
-            "height": 2 * pi / self.a,
-        }
+        dimensions = Dimension(
+            x_origin = -s0_star,
+            y_origin = 0,
+            width = 2 * s0_star,
+            height = 2 * pi / self.a,
+        )
 
         return dimensions
 
-    # def phi(self, x, y)
-    # def phi_x(self, x, y)
-    # def phi_y(self, x, y)
-    # def phi_normal(self, x, y):
-    #     return np.cross(self.phi_x, self.phi_y)
-
-    def calc(self, x, y):
-        rho = sqrt((4 * self.c0 * x * x) + 1)
-        z = 2 * self.s0 * x
-
+    def phi(self, x, y):
+        rho = self.__rho(x)
         new_x = rho * cos(self.a * y)
         new_y = rho * sin(self.a * y)
-        new_z = z
+        new_z = 2 * self.s0 * x
 
-        return mathutils.Vector([new_x, new_y, new_z])
+        return Vector([new_x, new_y, new_z])
 
-    def calc_normal(self, x, y):
-        epsilon = 0.01
+    def phi_x(self, x, y): 
+        rho_prime = self.__rho_prime(x)
+        new_x = rho_prime * cos(self.a * y)
+        new_y = rho_prime * sin(self.a * y)
+        new_z = 2 * self.s0 
 
-        base_point = self.calc(x, y)
+        return Vector([new_x, new_y, new_z])
 
-        x_shift = x + epsilon
-        y_shift = y
-        shifted_point = self.calc(x_shift, y_shift)
-        shift_x = shifted_point - base_point
+    def phi_y(self, x, y): 
+        rho = self.__rho(x)
+        new_x = -a * rho * sin(self.a * y)
+        new_y = a * rho * cos(self.a * y)
+        new_z = 0
 
-        x_shift = x
-        y_shift = y + epsilon
-        shifted_point = self.calc(x_shift, y_shift)
-        shift_y = shifted_point - base_point
+        return Vector([new_x, new_y, new_z])
 
-        normal = np.cross(shift_x, shift_y)
+    def __rho(self, x):
+        return sqrt((4 * self.c0 * x * x) + 1)
 
-        return normal
+    def __rho_prime(self, x):
+        return 4 * self.c0 * x / sqrt((4 * self.c0 * x * x) + 1)

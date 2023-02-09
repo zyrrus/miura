@@ -46,10 +46,9 @@ class ORI_OP_transform_domain(bpy.types.Operator):
 
         for cell in cell_objs:
             pos = cell.location
-            new_pos = hyperboloid.calc(pos.x, pos.y)
-            normal = hyperboloid.calc_normal(pos.x, pos.y)
-            # normal = mathutils.Vector([1, 0, 0])
-            face_normal(cell, normal)
+            new_pos = hyperboloid.phi(pos.x, pos.y)
+            orientation = hyperboloid.get_orientation(pos.x, pos.y)
+            face_normal(cell, orientation.normal)
             cell.location = new_pos
 
         return {'FINISHED'}
