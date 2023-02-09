@@ -1,5 +1,18 @@
 # Miura
 
+## TODO
+
+-   [x] Make phi an abstract class with the ability to compute
+    -   phi
+    -   phi_x
+    -   phi_y
+    -   normal
+-   [ ] Adjust domain cell generation + inputs
+    -   The circumference of the hyperboloid / number of desired cells is the max width of a cell. How to do this generally
+    -   Maybe include it in gen_domain
+-   [ ] Reposition object orientation so that it is where the Miura center is
+    -   MiuraBuilder + MiuraTransformer classes?
+
 ## Development Environment Setup
 
 1. Install the [Blender Development extension by Jacques Lucke](https://marketplace.visualstudio.com/items?itemName=JacquesLucke.blender-development)
