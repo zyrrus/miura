@@ -7,6 +7,7 @@
     -   phi_x
     -   phi_y
     -   normal
+-   [ ] Have face_normal() use phi_x and phi_y
 -   [ ] Adjust domain cell generation + inputs
     -   The circumference of the hyperboloid / number of desired cells is the max width of a cell. How to do this generally
     -   Maybe include it in gen_domain
