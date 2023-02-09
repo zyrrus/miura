@@ -1,28 +1,32 @@
-from math import sqrt
+from math import sqrt, atan2
 
 import bpy
+import mathutils
 import numpy as np
 
-# import bpy
-# from bpy import context
-import mathutils
-# from mathutils import Matrix
-# import math
+from miura.utils.phi import Hyperboloid
 
-def track_to_point( obj, point ):
-    normal = obj.data.polygons[0].normal.xyz
-    mat_obj = obj.matrix_basis
-    mat_scale = mathutils.Matrix.Scale(1, 4, mat_obj.to_scale() )
-    trans = mat_obj.to_translation()
-    mat_trans = mathutils.Matrix.Translation(trans)
-    print( "mat_scale\n" + str(mat_obj.to_scale()))
-    point_trans = point - trans
-    q = normal.rotation_difference( point_trans )
-    mat_rot = q.to_matrix()
-    mat_rot.resize_4x4()
 
-    mat_obj = mat_trans * mat_rot * mat_scale    
-    obj.matrix_basis = mat_obj
+def face_normal(obj, normal):
+    # current_normal = obj.data.polygons[0].normal
+    # rot_matrix = current_normal.rotation_difference(normal)
+    # obj.rotation_euler = rot_matrix.to_euler()
+
+    # Get the current normal vector of the quad
+    current_normal = obj.data.polygons[0].normal
+
+    # Get the rotation matrix that rotates the current normal to the new normal
+    rot_matrix = current_normal.rotation_difference(normal)
+
+    # Align the short side of the quad with the Z axis
+    z_axis = mathutils.Vector((0, 0, 1))
+    align_matrix = z_axis.rotation_difference(obj.data.polygons[0].normal)
+
+    # Combine the two matrices to get the final rotation matrix
+    final_matrix = rot_matrix @ align_matrix
+
+    # Rotate the quad using the final rotation matrix
+    obj.rotation_euler = final_matrix.to_euler()
 
 
 class ORI_OP_transform_domain(bpy.types.Operator):
@@ -32,11 +36,20 @@ class ORI_OP_transform_domain(bpy.types.Operator):
     def execute(self, context):
         # Get props
         ori_props = context.scene.ori
+        theta = ori_props.paper_theta
 
+        cell_objs = [
+            obj for obj in bpy.data.objects if obj.name.startswith("Cell")
+        ]
 
-        cell_objs = [obj for obj in bpy.data.objects if obj.name.startswith("Cell")]
+        hyperboloid = Hyperboloid(theta)
+
         for cell in cell_objs:
-            track_to_point(cell, mathutils.Vector([0, 0, 0]))
-
+            pos = cell.location
+            new_pos = hyperboloid.calc(pos.x, pos.y)
+            normal = hyperboloid.calc_normal(pos.x, pos.y)
+            # normal = mathutils.Vector([1, 0, 0])
+            face_normal(cell, normal)
+            cell.location = new_pos
 
         return {'FINISHED'}

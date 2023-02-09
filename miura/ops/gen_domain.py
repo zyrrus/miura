@@ -22,18 +22,26 @@ class ORI_OP_generate_domain(bpy.types.Operator):
         domain_width, domain_height = dimensions['width'], dimensions['height']
         domain_x_origin, domain_y_origin = dimensions['origin_x'], dimensions['origin_y']
 
-        cell_width = domain_width / x_cell_count
-        r = cell_width / sqrt(3) 
-        cell_height = 2 * r
-        y_cell_count = domain_height // cell_height
+        # Cells point up in the end
+        cell_height = domain_width / x_cell_count
+        r = cell_height / 2
+        cell_width = cell_height * sqrt(3) / 2
+        y_cell_count = domain_height // cell_width
 
-        gb = GridBuilder(domain_width, domain_height, x_cell_count, y_cell_count, domain_x_origin, domain_y_origin)
+        # Cells point sideways in the end
+        # cell_width = domain_width / x_cell_count
+        # r = cell_width / sqrt(3)
+        # cell_height = 2 * r
+        # y_cell_count = domain_height // cell_height
+
+        gb = GridBuilder(domain_width, domain_height, x_cell_count,
+                         y_cell_count, domain_x_origin, domain_y_origin)
         gb.generate()
 
         return {'FINISHED'}
 
 
-class GridCell: 
+class GridCell:
     def __init__(self, x, y, width, height):
         # (x, y) = bottom left corner
         self.x = x
@@ -53,19 +61,19 @@ class GridCell:
         verts = [self.sw, self.se, self.ne, self.nw]
         faces = [(0, 1, 2, 3)]
 
-        # Create Mesh Datablock 
-        mesh = bpy.data.meshes.new('Cell') 
-        mesh.from_pydata(verts, [], faces) 
+        # Create Mesh Datablock
+        mesh = bpy.data.meshes.new('Cell')
+        mesh.from_pydata(verts, [], faces)
 
-        # Create Object and link to scene 
-        obj = bpy.data.objects.new("Cell", mesh) 
-        bpy.context.scene.collection.objects.link(obj) 
+        # Create Object and link to scene
+        obj = bpy.data.objects.new("Cell", mesh)
+        bpy.context.scene.collection.objects.link(obj)
 
         pos = mathutils.Vector((self.x, self.y, 0))
         obj.matrix_basis = mathutils.Matrix.Translation(pos)
 
 
-class GridBuilder: 
+class GridBuilder:
     def __init__(self, width, height, x_cell_count, y_cell_count, x_offset, y_offset):
         self.width = width
         self.height = height
@@ -81,12 +89,13 @@ class GridBuilder:
         origin_x = self.origin[0]
         origin_y = self.origin[1]
 
-        for r in range(self.y_cell_count): 
+        for r in range(self.y_cell_count):
             row = []
-            
+
             for c in range(self.x_cell_count):
-                cell = GridCell(origin_x + (cell_width * c), origin_y  + (cell_height * r), cell_width, cell_height)
+                cell = GridCell(origin_x + (cell_width * c), origin_y +
+                                (cell_height * r), cell_width, cell_height)
                 cell.build_mesh()
                 row.append(cell)
-            
+
             self.cells.append(row)
