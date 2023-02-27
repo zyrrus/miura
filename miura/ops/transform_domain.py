@@ -4,30 +4,34 @@ import bpy
 import mathutils
 import numpy as np
 
-from miura.utils.phi import Hyperboloid
+from miura.utils.phi import Hyperboloid, get_rotation_matrix
+from miura.utils.visualize import debug_vector
 
+one_flag = True
 
-def face_normal(obj, normal):
+def face_normal(obj, orientation, new_pos):
     # current_normal = obj.data.polygons[0].normal
-    # rot_matrix = current_normal.rotation_difference(normal)
-    # obj.rotation_euler = rot_matrix.to_euler()
-
-    # Get the current normal vector of the quad
+    # rotation_matrix = get_rotation_matrix(orientation.x, orientation.y, orientation.normal)
+    # euler = rotation_matrix.to_euler()
+    # obj.rotation_euler = euler
+    
+    
+    global one_flag
+    
+    new_normal = orientation.normal
     current_normal = obj.data.polygons[0].normal
-
-    # Get the rotation matrix that rotates the current normal to the new normal
-    rot_matrix = current_normal.rotation_difference(normal)
-
-    # Align the short side of the quad with the Z axis
+    rot_matrix = current_normal.rotation_difference(new_normal)
     z_axis = mathutils.Vector((0, 0, 1))
     align_matrix = z_axis.rotation_difference(obj.data.polygons[0].normal)
-
-    # Combine the two matrices to get the final rotation matrix
     final_matrix = rot_matrix @ align_matrix
-
-    # Rotate the quad using the final rotation matrix
     obj.rotation_euler = final_matrix.to_euler()
 
+    if one_flag: 
+        origin = new_pos
+        debug_vector(origin, mathutils.Vector(orientation.normal).normalized(), name="Normal")
+        debug_vector(origin, mathutils.Vector(orientation.x).normalized(), name="Dx")
+        debug_vector(origin, mathutils.Vector(orientation.y).normalized(), name="Dy")
+        # one_flag = False
 
 class ORI_OP_transform_domain(bpy.types.Operator):
     bl_idname = 'ori.transform_domain'
@@ -48,7 +52,7 @@ class ORI_OP_transform_domain(bpy.types.Operator):
             pos = cell.location
             new_pos = hyperboloid.phi(pos.x, pos.y)
             orientation = hyperboloid.get_orientation(pos.x, pos.y)
-            face_normal(cell, orientation.normal)
+            face_normal(cell, orientation, new_pos)
             cell.location = new_pos
 
         return {'FINISHED'}

@@ -64,11 +64,30 @@ class GridCell:
         mesh.from_pydata(verts, [], faces)
 
         # Create Object and link to scene
-        obj = bpy.data.objects.new("Cell", mesh)
-        bpy.context.scene.collection.objects.link(obj)
+        self.obj = bpy.data.objects.new("Cell", mesh)
+        bpy.context.scene.collection.objects.link(self.obj)
 
         pos = mathutils.Vector((self.x, self.y, 0))
-        obj.matrix_basis = mathutils.Matrix.Translation(pos)
+        self.obj.matrix_basis = mathutils.Matrix.Translation(pos)
+
+    def move_obj_origin(self):
+        old_loc = self.obj.location
+        new_loc = mathutils.Vector((self.x + self.w/2, self.y + self.h/2, 0))
+        for vert in self.obj.data.vertices:
+            vert.co -= new_loc - old_loc
+        self.obj.location = new_loc 
+
+
+        # current_matrix = self.obj.matrix_local
+
+        # # Calculate the offset to move the origin to the center of the quad
+        # offset = mathutils.Vector((self.w/2, self.h/2, 0))
+
+        # # Create a new matrix with the offset applied to the translation component
+        # new_matrix = mathutils.Matrix.Translation(offset) @ current_matrix
+
+        # # Set the new matrix as the object's local matrix
+        # self.obj.matrix_local = new_matrix
 
 
 class GridBuilder:
@@ -94,6 +113,7 @@ class GridBuilder:
                 cell = GridCell(origin_x + (cell_width * c), origin_y +
                                 (cell_height * r), cell_width, cell_height)
                 cell.build_mesh()
+                cell.move_obj_origin()
                 row.append(cell)
 
             self.cells.append(row)

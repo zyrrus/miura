@@ -3,7 +3,24 @@ from dataclasses import dataclass
 from math import sqrt, sin, cos, pi, acos
 
 import numpy as np
-from mathutils import Vector
+from mathutils import Vector, Matrix
+
+
+def get_rotation_matrix(x, y, n):
+    # Normalize the input vectors
+    X = x.normalized()
+    Y = y.normalized()
+    N = n.normalized()
+    
+    # Construct the rotation matrix
+    M = Matrix((X, Y, N))
+    
+    # Ensure that the determinant of M is +1
+    det = X.dot(Y.cross(N))
+    if det < 0:
+        M[0] *= -1
+    
+    return M
 
 @dataclass
 class Dimension:
@@ -38,7 +55,7 @@ class AbstractPhi(abc.ABC):
     def get_orientation(self, x, y) -> Orientation:
         phi_x = self.phi_x(x, y)
         phi_y = self.phi_y(x, y)
-        normal = np.cross(phi_x, phi_y)
+        normal = phi_x.cross(phi_y)
         return Orientation(phi_x, phi_y, normal)
 
     
@@ -81,8 +98,8 @@ class Hyperboloid(AbstractPhi):
 
     def phi_y(self, x, y): 
         rho = self.__rho(x)
-        new_x = -a * rho * sin(self.a * y)
-        new_y = a * rho * cos(self.a * y)
+        new_x = -self.a * rho * sin(self.a * y)
+        new_y = self.a * rho * cos(self.a * y)
         new_z = 0
 
         return Vector([new_x, new_y, new_z])

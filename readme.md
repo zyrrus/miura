@@ -14,6 +14,12 @@
 -   [ ] Reposition object orientation so that it is where the Miura center is
     -   MiuraBuilder + MiuraTransformer classes?
 
+## Left off at
+
+got the debug_vector function working. now debug what the dx, dy vectors are doing everywhere
+
+---
+
 ## Development Environment Setup
 
 1. Install the [Blender Development extension by Jacques Lucke](https://marketplace.visualstudio.com/items?itemName=JacquesLucke.blender-development)
