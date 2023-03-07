@@ -56,7 +56,7 @@ class AbstractPhi(abc.ABC):
         phi_x = self.phi_x(x, y)
         phi_y = self.phi_y(x, y)
         normal = phi_x.cross(phi_y)
-        return Orientation(phi_x, phi_y, normal)
+        return Orientation(phi_x.normalized(), phi_y.normalized(), normal.normalized())
 
     
 class Hyperboloid(AbstractPhi):
