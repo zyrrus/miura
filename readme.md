@@ -1,5 +1,9 @@
 # Miura
 
+## Where I Left Off
+
+Still working on the initial guess. Need to correct the domain--each grid cell turns into one miura cell.
+
 ## TODO
 
 -   [x] Make phi an abstract class with the ability to compute
@@ -7,16 +11,11 @@
     -   phi_x
     -   phi_y
     -   normal
--   [ ] Have face_normal() use phi_x and phi_y
+-   [x] Have face_normal() use phi_x and phi_y
+-   [x] Reposition object orientation so that it is where the Miura center is
 -   [ ] Adjust domain cell generation + inputs
     -   The circumference of the hyperboloid / number of desired cells is the max width of a cell. How to do this generally
     -   Maybe include it in gen_domain
--   [ ] Reposition object orientation so that it is where the Miura center is
-    -   MiuraBuilder + MiuraTransformer classes?
-
-## Left off at
-
-got the debug_vector function working. now debug what the dx, dy vectors are doing everywhere
 
 ---
 
@@ -32,12 +31,3 @@ got the debug_vector function working. now debug what the dx, dy vectors are doi
       `"C:\PATH_TO_BLENDER\Blender Foundation\Blender 2.93\2.93\python\bin\python.EXE" -m pip install --upgrade --force-reinstall debugpy click flask`, and then try again.
 
 4. To easily enable intellisense, run `pip install fake-bpy-module-2.93`
-
-## Links
-
-https://hal-enpc.archives-ouvertes.fr/hal-01978795/document
-
-nurbs for polynomial meshes
-
-https://docs.blender.org/manual/en/latest/animation/constraints/transform/limit_distance.html
-try constraining edges
